@@ -81,32 +81,13 @@ def scratchNet( cname='controller', cargs='-v ptcp:' ):
     info( str( h15 ) + '\n' )
     info( str( h16 ) + '\n' )
 
-    info( "*** Starting network using Open vSwitch\n" )
-    controller.cmd( cname + ' ' + cargs + '&' )
-    switch.cmd( 'ovs-vsctl del-br dp0' )
-    switch.cmd( 'ovs-vsctl add-br dp0' )
-    for intf in switch.intfs.values():
-        switch.cmd( 'ovs-vsctl add-port dp0 %s\n' % intf )
-
-    # Note: controller and switch are in root namespace, and we
-    # can connect via loopback interface
-    switch.cmd( 'ovs-vsctl set-controller dp0 tcp:127.0.0.1:6633' )
-
-    info( '*** Waiting for switch to connect to controller' )
-    while 'is_connected' not in quietRun( 'ovs-vsctl show' ):
-        sleep( 1 )
-        info( '.' )
-    info( '\n' )
-
     info( "*** Running test\n" )
-    h16.cmdPrint( 'ping -c1 ' + h1.IP() )
+    h16.cmdPrint( 'ping -c100 ' + h1.IP() )
     h1.cmdPrint( 'iperf -s &')
     h1.cmdPrint( 'time iperf -c ' + h1.IP() + ' -t2 -n 100M')
 
     info( "*** Stopping network\n" )
     controller.cmd( 'kill %' + cname )
-    switch.cmd( 'ovs-vsctl del-br dp0' )
-    switch.deleteIntfs()
     info( '\n' )
 
 if __name__ == '__main__':
