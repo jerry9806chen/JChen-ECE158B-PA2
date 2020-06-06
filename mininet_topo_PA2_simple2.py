@@ -82,9 +82,10 @@ def scratchNet( cname='controller', cargs='-v ptcp:' ):
     info( str( h16 ) + '\n' )
 
     info( "*** Running test\n" )
-    h16.cmdPrint( 'ping -c100 ' + h1.IP() )
     h1.cmdPrint( 'iperf -s &')
-    h1.cmdPrint( 'time iperf -c ' + h1.IP() + ' -t2 -n 100M')
+    h16.cmdPrint( 'ping -c100 ' + h1.IP())# + ' time iperf -c ' + h1.IP() + ' -t2 -n 100M')
+    #h1.cmdPrint( 'iperf -s &')
+    h16.cmdPrint( 'time iperf -c ' + h1.IP() + ' -t2 -n 100M')
 
     info( "*** Stopping network\n" )
     controller.cmd( 'kill %' + cname )
